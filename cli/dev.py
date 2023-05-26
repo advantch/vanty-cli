@@ -6,12 +6,13 @@ import typer
 from honcho.manager import Manager
 from rich import print
 from typer import Typer
+
 from .config import config
 
 app = Typer(
     name="dev",
     help="Development commands for initializing the project, running the app, run migrations, etc.",
-    no_args_is_help=True
+    no_args_is_help=True,
 )
 
 
@@ -75,7 +76,17 @@ def migrate():
     Runs migrations
     """
     try:
-        run(["docker-compose", "run", "--rm", "django", "python", "manage.py", "migrate"])
+        run(
+            [
+                "docker-compose",
+                "run",
+                "--rm",
+                "django",
+                "python",
+                "manage.py",
+                "migrate",
+            ]
+        )
     except subprocess.CalledProcessError as e:
         print(e.output)
         raise e
@@ -88,7 +99,17 @@ def make_migrations():
     Assumes you are running the project in docker containers.
     """
     try:
-        run(["docker-compose", "run", "--rm", "django", "python", "manage.py", "makemigrations"])
+        run(
+            [
+                "docker-compose",
+                "run",
+                "--rm",
+                "django",
+                "python",
+                "manage.py",
+                "makemigrations",
+            ]
+        )
     except subprocess.CalledProcessError as e:
         print(e.output)
         raise e
@@ -122,5 +143,10 @@ def create_superuser():
 @app.command()
 def stripe_cli():
     print("[green] Opening Stripe CLI")
-    commands=["stripe", "listen", "--forward-to", "http://localhost:8080/billing/webhooks/"]
+    commands = [
+        "stripe",
+        "listen",
+        "--forward-to",
+        "http://localhost:8080/billing/webhooks/",
+    ]
     run(commands)

@@ -1,16 +1,19 @@
-# Copyright 
+# Copyright
 # Extended by Advantch.com 2023
 # Attribution: vanty Labs 2022
 import logging
 import os
 import typing
 import warnings
-import toml
 
+import toml
 
 # Locate config file and read it
 
-user_config_path: str = os.environ.get("VANTY_CONFIG_PATH") or os.path.expanduser("~/.vanty.toml")
+user_config_path: str = os.environ.get("VANTY_CONFIG_PATH") or os.path.expanduser(
+    "~/.vanty.toml"
+)
+
 
 def _read_user_config():
     if os.path.exists(user_config_path):
@@ -106,7 +109,9 @@ ch = logging.StreamHandler()
 log_level_numeric = logging.getLevelName(config["loglevel"])
 logger.setLevel(log_level_numeric)
 ch.setLevel(log_level_numeric)
-ch.setFormatter(logging.Formatter("%(asctime)s %(message)s", datefmt="%Y-%m-%dT%H:%M:%S%z"))
+ch.setFormatter(
+    logging.Formatter("%(asctime)s %(message)s", datefmt="%Y-%m-%dT%H:%M:%S%z")
+)
 logger.addHandler(ch)
 
 # Utils to write config

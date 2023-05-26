@@ -25,20 +25,20 @@ pipx install vanty-cli
    ```bash
    vanty project download
    ```
-   
+
 3. Get started:
 
    ```bash
    cd <project-name>
    vanty dev init
    ```
-   
+
 4. Run the project:
 
    ```bash
     vanty dev run
     ```
-   
+
 
 ## Attribution:
 - https://modal.com for the ideas and the code for the CLI auth.

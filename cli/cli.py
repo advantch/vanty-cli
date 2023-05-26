@@ -1,11 +1,9 @@
 import typer
 
-from cli.project import app as project
+from cli.auth import app as auth
 from cli.dev import app as dev
 from cli.ops import app as ops
-from cli.auth import app as auth
-
-
+from cli.project import app as project
 
 app = typer.Typer(
     no_args_is_help=True,

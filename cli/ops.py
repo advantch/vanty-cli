@@ -1,4 +1,5 @@
 from subprocess import call, run
+
 import environ
 import rich
 import sh
@@ -8,8 +9,8 @@ from rich import print as rprint
 app = typer.Typer(
     name="ops",
     help="Operations commands for interacting with providers such as fly.io. "
-         "\n this will be moved to plugins in the future.",
-    no_args_is_help=True
+    "\n this will be moved to plugins in the future.",
+    no_args_is_help=True,
 )
 
 
@@ -41,7 +42,7 @@ def set_flyctl_vars():
 
     for e in export_envs:
         rich.print(f"exporting {e}={env(e)}")
-    
+
     call(["fly", "secrets", "set", f"{e}={env(e)}"])
 
 

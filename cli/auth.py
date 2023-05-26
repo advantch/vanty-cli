@@ -1,5 +1,5 @@
 import getpass
-from typing_extensions import Annotated
+from typing import Annotated
 
 import rich
 import typer
@@ -7,20 +7,17 @@ import typer
 from cli._client import Client
 from cli.config import _store_user_config, config, user_config_path
 
-app = typer.Typer(
-    name="auth", help="Manage tokens.", no_args_is_help=True
-)
+app = typer.Typer(name="auth", help="Manage tokens.", no_args_is_help=True)
 
 
 @app.command(
     help="Set license id for connecting to advantch.com."
-         "If not provided with the command, you will be prompted"
-         " to enter your credentials."
+    "If not provided with the command, you will be prompted"
+    " to enter your credentials."
 )
 def set(
     license_id: str = typer.Option(prompt=True, help="License id."),
 ):
-
     if license_id is None:
         license_id = getpass.getpass("License_id:")
 
@@ -29,9 +26,13 @@ def set(
     data = Client.verify(server_url, license_id)
     if data.is_valid:
         rich.print("[green]Token verified successfully[/green]")
-        _store_user_config({"token_id": data.token_id, "token_secret": data.token_secret})
+        _store_user_config(
+            {"token_id": data.token_id, "token_secret": data.token_secret}
+        )
         rich.print(f"Token written to {user_config_path}")
-        
+
     else:
-        rich.print("[red]Unable to verify invalid[/red]. Please check your license id and try again.")
+        rich.print(
+            "[red]Unable to verify invalid[/red]. Please check your license id and try again."
+        )
         rich.print(f"If this problem persists, please contact support@advantch.com")
