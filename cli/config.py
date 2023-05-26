@@ -1,6 +1,6 @@
 # Copyright
 # Extended by Advantch.com 2023
-# Attribution: vanty Labs 2022
+# Attribution: Modal Labs 2022
 import logging
 import os
 import typing
