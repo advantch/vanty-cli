@@ -1,8 +1,12 @@
-# VantyCLI
+# Vanty CLI
 
-Vanty is the fastest way to launch new SaaS & AI products.
+CLI for managing projects from advantch.com including:
 
-Visit https://www.advantch.com/ for documentation and more information
+- Vanty Starter Kit
+
+   This  Vanty Starter Kit is the fastest way to launch new SaaS & AI products.
+
+   Visit https://www.advantch.com/ for documentation and more information
 
 ## Installation
 
@@ -58,3 +62,5 @@ Please note that whilst this is open source, it is not intended to be a communit
 Advantch users can submit PRs for extensions etc that maybe helpful to the core project or other users.
 
 Otherwise, please fork and use this as a base for your own projects.
+
+<img alt="logo" height="20" width="20" src="https://cdn.advantch.com/static/images/logo.png">
