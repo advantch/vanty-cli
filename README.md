@@ -43,12 +43,6 @@ pipx install vanty-cli
     vanty dev run
     ```
 
-
-## Attribution:
-- https://modal.com for the ideas and the code for the CLI auth.
-- https://til.simonwillison.net/ for the ideas on clis, and a whole lot more.
-
-
 ## Issues & Support:
 
 Advantch users can report issues on the slack issue channel.
