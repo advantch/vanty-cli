@@ -1,4 +1,4 @@
-# Vanty CLI
+# <img style="margin-right: 2px; margin-top: 10px" alt="logo" height="12" width="12" src="https://cdn.advantch.com/static/images/logo.png"> Vanty CLI
 
 CLI for managing projects from advantch.com including:
 
@@ -49,12 +49,12 @@ Advantch users can report issues on the slack issue channel.
 
 - https://www.advantch.com/issues/
 
-## PR and Contributions:
+## PRs and Contributions:
 
 Please note that whilst this is open source, it is not intended to be a community project.
 
 Advantch users can submit PRs for extensions etc that maybe helpful to the core project or other users.
 
 Otherwise, please fork and use this as a base for your own projects.
-
-<img alt="logo" height="20" width="20" src="https://cdn.advantch.com/static/images/logo.png">
+ 
+2023 &centerdot; Advantch.
