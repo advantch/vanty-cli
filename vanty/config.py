@@ -65,6 +65,7 @@ _SETTINGS = {
     "token_id": _Setting(),
     "local_folder": _Setting(default=".", transform=os.path.abspath),
     "token_secret": _Setting(),
+    "ssr_enabled": _Setting(default=False, transform=lambda s: s.lower() == "true"),
 }
 
 

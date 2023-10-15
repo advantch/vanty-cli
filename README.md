@@ -2,18 +2,18 @@
 
 CLI for managing projects from advantch.com including:
 
-- Vanty Starter Kit
+- TheStarter Kit
 
-   This  Vanty Starter Kit is the fastest way to launch new SaaS & AI products.
+   The Starter Kit is the fastest way to launch new SaaS & AI products.
 
    Visit https://www.advantch.com/ for documentation and more information
 
 ## Installation
 
-We recommend using pipx to install vanty-cli:
+We recommend using poetry to install vanty:
 
 ```bash
-pipx install vanty-cli
+poetry install vanty
 ```
 
 ## Usage
@@ -21,13 +21,13 @@ pipx install vanty-cli
 1. Verify your license:
 
    ```bash
-   vanty verify --license <your-license-id>
+   vanty auth verify <your-license-token> (closed alpha)
    ```
 
 2. Download the project to the current directory:
 
    ```bash
-   vanty project download
+   vanty project download --project <project-id> (closed alpha)
    ```
 
 3. Get started:
@@ -40,14 +40,21 @@ pipx install vanty-cli
 4. Run the project:
 
    ```bash
-    vanty dev run
+    vanty dev start
     ```
 
 ## Issues & Support:
 
 Advantch users can report issues on the slack issue channel.
 
-- https://www.advantch.com/issues/
+- https://www.advantch.com/support/
+
+## Building for pypi
+
+```bash
+poetry build
+poetry publish
+```
 
 ## PRs and Contributions:
 
@@ -56,5 +63,5 @@ Please note that whilst this is open source, it is not intended to be a communit
 Advantch users can submit PRs for extensions etc that maybe helpful to the core project or other users.
 
 Otherwise, please fork and use this as a base for your own projects.
- 
+
 2023 &centerdot; Advantch.

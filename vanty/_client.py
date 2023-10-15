@@ -1,11 +1,13 @@
+from __future__ import annotations
+
 import io
 import zipfile
 
-import httpx
+import requests
 import rich
 
-from .config import config
-from .schema import DownloadProjectHttpResponse, LicenseVerifiedHttpResponse
+from vanty.config import config, logger
+from vanty.schema import DownloadProjectHttpResponse, LicenseVerifiedHttpResponse
 
 
 class Client:
@@ -16,11 +18,11 @@ class Client:
         :param url:
         :return:
         """
-        response = httpx.get(url)
+        response = requests.get(url)
         zipped_file = io.BytesIO(response.content)
         return zipped_file
 
-    def verify(self, license_id: str) -> LicenseVerifiedHttpResponse:
+    def verify(self, license_token: str) -> LicenseVerifiedHttpResponse:
         """
         Authenticates the token.
 
@@ -30,32 +32,34 @@ class Client:
         server_url = config.get("server_url")
         rich.print(f"Verifying license against [blue]{server_url}[/blue]")
         try:
-            res = httpx.post(
+            res = requests.post(
                 f"{server_url}/projects/authenticate-license/",
-                json={"license_id": license_id},
+                json={"license_token": license_token},
             )
             data = res.json()
-            return LicenseVerifiedHttpResponse(**data)
+            return LicenseVerifiedHttpResponse(**data, license_token=license_token)
         except Exception as e:
-            rich.print(f"[red]Error: {e}[/red]")
+            logger.error(f"Error verifying token: {e}")
             return LicenseVerifiedHttpResponse.error()
 
-    def download(self):
+    def download(self, project_id: str | None = None):
         """
         Gets the project.
         :return:
         """
+
         headers = {"X-API-Token": f"{config.get('token_secret')}"}
         local_folder = config.get("local_folder")
         server_url = config.get("server_url")
 
         rich.print(f"Downloading project from [blue]{server_url}[/blue]")
-        response = httpx.get(f"{server_url}/projects/", headers=headers)
+        response = requests.get(f"{server_url}/projects/download/", headers=headers)
         data = DownloadProjectHttpResponse(**response.json())
 
         if data.is_valid is False or data.profile_status == "inactive":
             rich.print(
-                "[red]Project Download Failed, the link may have expired!\n Please try again.[/red]"
+                "[red]Project Download Failed, the link may have expired!"
+                "\n Please try again.[/red]"
             )
             return
 
@@ -64,10 +68,11 @@ class Client:
             return
 
         # fetch the zip file
-        response = httpx.get(data.url)
+        response = requests.get(data.url)
         if not response.status_code == 200:
             rich.print(
-                "[red]File Download Failed, the link may have expired!\n Please try again.[/red]"
+                "[red]File Download Failed, the link may have expired!\n "
+                "Please try again.[/red]"
             )
             return
 

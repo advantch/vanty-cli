@@ -4,7 +4,8 @@ import environ
 import rich
 import sh
 import typer
-from rich import print as rprint
+
+from vanty.config import logger
 
 app = typer.Typer(
     name="ops",
@@ -15,10 +16,11 @@ app = typer.Typer(
 
 
 @app.command()
-def set_flyctl_vars():
+def set_secrets(platform="fly"):
     """
-    Fly.io
-    Fetch env vars flyctl environment variables
+    Set secrets for the platform.
+    Supported platforms:
+    - fly.io
     """
     env = environ.Env(
         # set casting, default value
@@ -26,18 +28,14 @@ def set_flyctl_vars():
     )
 
     # Set the project base directory
-    environ.Env.read_env(".envs/.production/.django")
+    environ.Env.read_env(".env")
 
     export_envs = [
         "DJANGO_AWS_SECRET_ACCESS_KEY",
-        "DJANGO_ACCOUNT_ALLOW_REGISTRATION",
         "DJANGO_SECRET_KEY",
-        "STRIPE_TEST_SECRET_KEY",
         "STRIPE_LIVE_SECRET_KEY",
-        "DJSTRIPE_WEBHOOK_SECRET",
-        "SINGLESTORE_DB_PASSWORD",
-        "TWITTER_ACCESS_TOKEN_SECRET",
-        "TWITTER_CLIENT_SECRET",
+        "REDIS_URL",
+        "DATABASE_URL",
     ]
 
     for e in export_envs:
@@ -47,31 +45,26 @@ def set_flyctl_vars():
 
 
 @app.command()
-def check_app_status(app_name="demo-app"):
+def app_status(app_name=None):
     """Check the app status on fly.io"""
-    rich.print("Checking app status")
+    logger.info("Checking app status")
+    if app_name is None:
+        return sh.fly("status")
     sh.fly("status", app=app_name)
 
 
 @app.command()
 def fly_deploy(skip_tests: bool = False):
     """Run tests and deploy to fly.io"""
-    rich.print("[green]Checking app status[/green]")
+    logger.info("Running tests")
     run(["make", "tests"])
     run(["flyctl", "deploy"])
 
 
-def process_output(line, stdin, process):
-    rprint(line)
-    if "ERROR" in line:
-        process.kill()
-        return True
-
-
 @app.command()
-def fly_db_connect(app_name="demo-app", bg=True):
+def fly_proxy_db(app_name="demo-app", bg=True):
     """
     Connect to the database
     """
-    rprint("[green] Connecting to the database")
-    return sh.fly("proxy", "5433:5432", app=app_name, _out=rprint, _bg=bg)
+    logger.info("Connecting to the database")
+    return sh.fly("proxy", "5433:5432", app=app_name, _out=logger.info, _bg=bg)

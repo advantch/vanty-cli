@@ -1,9 +1,9 @@
 import typer
 
-from cli.auth import app as auth
-from cli.dev import app as dev
-from cli.ops import app as ops
-from cli.project import app as project
+from vanty.auth import app as auth
+from vanty.dev import app as dev
+from vanty.ops import app as ops
+from vanty.project import app as project
 
 app = typer.Typer(
     no_args_is_help=True,

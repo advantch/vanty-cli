@@ -2,8 +2,7 @@ import pytest
 import respx
 from httpx import Response
 
-from cli.config import config
-from cli.schema import DownloadProjectHttpResponse, LicenseVerifiedHttpResponse
+from vanty.config import config
 
 
 @pytest.fixture

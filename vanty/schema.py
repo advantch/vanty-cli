@@ -13,7 +13,7 @@ class ProfileStatus(str, Enum):
 
 
 class LicenseVerifiedHttpResponse(BaseModel):
-    license_id: str
+    license_token: str
     token_id: str | None
     token_secret: str | None
     is_valid: bool
