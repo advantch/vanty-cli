@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import io
 import zipfile
+from typing import Optional
 
 import requests
 import rich
@@ -42,7 +43,7 @@ class Client:
             logger.error(f"Error verifying token: {e}")
             return LicenseVerifiedHttpResponse.error()
 
-    def download(self, project_id: str | None):
+    def download(self, project_id: Optional[str]):
         """
         Gets the project.
         :return:

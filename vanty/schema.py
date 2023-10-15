@@ -1,3 +1,4 @@
+from typing import Optional
 from enum import Enum
 
 from pydantic import BaseModel
@@ -12,8 +13,8 @@ class ProfileStatus(str, Enum):
 
 class LicenseVerifiedHttpResponse(BaseModel):
     license_token: str
-    token_id: str | None
-    token_secret: str | None
+    token_id: Optional[str]
+    token_secret: Optional[str]
     is_valid: bool
 
     @classmethod
@@ -22,12 +23,12 @@ class LicenseVerifiedHttpResponse(BaseModel):
 
 
 class DownloadProjectHttpResponse(BaseModel):
-    url: str | None
-    project_id: str | None
-    version: str | None
-    is_valid: bool | None
-    profile_id: str | None
-    profile_status: ProfileStatus | None
+    url: Optional[str]
+    project_id: Optional[str]
+    version: Optional[str]
+    is_valid: Optional[bool]
+    profile_id: Optional[str]
+    profile_status: Optional[ProfileStatus]
 
     @classmethod
     def error(cls):

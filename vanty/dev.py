@@ -3,6 +3,7 @@ from __future__ import annotations
 import subprocess
 import sys
 from subprocess import run
+from typing import Optional
 
 import typer
 from honcho.manager import Manager
@@ -77,7 +78,7 @@ def start():
 
 
 @app.command()
-def migrate(options: str | None):
+def migrate(options: Optional[str]):
     """
     Runs migrations in docker
     Assumes you are running the project in docker containers.
@@ -104,7 +105,7 @@ def migrate(options: str | None):
 
 
 @app.command()
-def make_migrations(options: str | None = None):
+def make_migrations(options: Optional[str]):
     """
     Create migrations.
     Assumes you are running the project in docker containers.
