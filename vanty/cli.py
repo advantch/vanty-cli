@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 import typer
 
 from vanty.auth import app as auth
 from vanty.dev import app as dev
-from vanty.ops import app as ops
 from vanty.project import app as project
 
 app = typer.Typer(
@@ -18,5 +19,4 @@ app = typer.Typer(
 )
 app.add_typer(auth)
 app.add_typer(dev)
-app.add_typer(ops)
 app.add_typer(project)

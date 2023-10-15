@@ -51,7 +51,7 @@ def build_container(container: str):
 
 
 @app.command()
-def start(docker: bool = False):
+def start():
     """
     Starts the docker stack.
     Uses honcho to run the separate processes.
@@ -77,7 +77,7 @@ def start(docker: bool = False):
 
 
 @app.command()
-def migrate(options: str | None = None):
+def migrate(options: str | None):
     """
     Runs migrations in docker
     Assumes you are running the project in docker containers.

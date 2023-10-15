@@ -12,3 +12,9 @@
 
 - 0.0.10
 - Update README.md
+
+- 0.0.11
+- update dev commands
+
+- 0.0.12
+- Fix regression in vanty dev commands

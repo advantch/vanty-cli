@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import rich
 
 from vanty.cli import app

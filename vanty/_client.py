@@ -42,7 +42,7 @@ class Client:
             logger.error(f"Error verifying token: {e}")
             return LicenseVerifiedHttpResponse.error()
 
-    def download(self, project_id: str | None = None):
+    def download(self, project_id: str | None):
         """
         Gets the project.
         :return:
