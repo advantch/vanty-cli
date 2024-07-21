@@ -246,9 +246,9 @@ def tests(app: str = None, file: str = None, compose_file: str = 'docker-compose
     if file and file.endswith(".py"):
         file = file[:-3]
     if app and file:
-        fstring = f"/tests/{app}/{file}.py" if app and file else ""
+        fstring = f"tests/{app}/{file}.py" if app and file else ""
     elif app:
-        fstring = f"/tests/{app}"
+        fstring = f"tests/{app}"
 
     if fstring:
         print(f"[green] Running tests for {fstring}")

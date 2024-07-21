@@ -1,5 +1,8 @@
 # ChangeLog
 
+- 0.0.39
+- update dev commands[compose file]
+
 - 0.0.38
 - update dev commands
 
