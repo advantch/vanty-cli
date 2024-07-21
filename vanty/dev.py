@@ -230,7 +230,7 @@ def stripe_cli(
 
 
 @app.command()
-def tests(app: str = None, file: str = None):
+def tests(app: str = None, file: str = None, compose_file: str = 'docker-compose.yml'):
     """
     Runs tests in the tests directory.
 
@@ -257,7 +257,7 @@ def tests(app: str = None, file: str = None):
 
     # errors will not be raised as they are handled by pytest
     try:
-        commands = DOCKER_COMPOSE_COMMAND + [
+        commands = DOCKER_COMPOSE_COMMAND + ['-f', compose_file] + [
             "run",
             "--rm",
             "django",
