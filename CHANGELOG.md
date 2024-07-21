@@ -1,5 +1,8 @@
 # ChangeLog
 
+- 0.0.38
+- update dev commands
+
 - 0.0.36 - 0.0.37
 - update tests
 - update commands to correctly use package manager

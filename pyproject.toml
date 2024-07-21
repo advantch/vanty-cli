@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "vanty"
-version = "0.0.37"
+version = "0.0.38"
 description = "CLI for installing and managing projects & applications from advantch.com and vanty.ai"
 authors = ["Themba <themba@advantch.com>"]
 license = "Unspecified"

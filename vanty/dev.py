@@ -23,8 +23,7 @@ app = Typer(
     no_args_is_help=True,
 )
 
-DOCKER_COMPOSE_COMMAND = "docker compose"
-DJANGO_SERVICE = "django"
+DOCKER_COMPOSE_COMMAND = ["docker", "compose"]
 
 
 @app.command()
@@ -73,7 +72,7 @@ def init():
     """Builds the docker stack"""
     package_manager = config.get("package_manager", "pnpm")
     try:
-        run([DOCKER_COMPOSE_COMMAND, "build"])
+        run(DOCKER_COMPOSE_COMMAND + ["build"])
         run([package_manager, "install"])
         print("[green] Project initialized successfully [/green]")
         # check if env file available
@@ -95,7 +94,7 @@ def init():
 def build_container(container: str):
     """Rebuilds a docker container"""
     try:
-        run([DOCKER_COMPOSE_COMMAND, "build", container])
+        run(DOCKER_COMPOSE_COMMAND + ["build", container])
     except subprocess.CalledProcessError as e:
         print(e.output)
         raise e
@@ -134,8 +133,7 @@ def migrate(options: Optional[str] = None):
     Runs migrations in docker
     Assumes you are running the project in docker containers.
     """
-    commands = [
-        DOCKER_COMPOSE_COMMAND,
+    commands = DOCKER_COMPOSE_COMMAND + [
         "run",
         "--rm",
         "django",
@@ -160,8 +158,7 @@ def makemigrations(options: Optional[str] = None):
     Create migrations.
     Assumes you are running the project in docker containers.
     """
-    commands = [
-        DOCKER_COMPOSE_COMMAND,
+    commands = DOCKER_COMPOSE_COMMAND + [
         "run",
         "--rm",
         "django",
@@ -190,8 +187,8 @@ def create_superuser():
     email = typer.prompt("What is the email of the superuser?")
     try:
         run(
-            [
-                DOCKER_COMPOSE_COMMAND,
+            DOCKER_COMPOSE_COMMAND
+            + [
                 "run",
                 "--rm",
                 "django",
@@ -260,8 +257,7 @@ def tests(app: str = None, file: str = None):
 
     # errors will not be raised as they are handled by pytest
     try:
-        commands = [
-            DOCKER_COMPOSE_COMMAND,
+        commands = DOCKER_COMPOSE_COMMAND + [
             "run",
             "--rm",
             "django",
@@ -283,8 +279,8 @@ def copy_statics():
     print("[green] Copying static files")
     try:
         subprocess.run(
-            [
-                DOCKER_COMPOSE_COMMAND,
+            DOCKER_COMPOSE_COMMAND
+            + [
                 "run",
                 "--rm",
                 "django",
@@ -306,8 +302,8 @@ def run_admin(command: str):
     print(f"[green] Running your django admin command: {command}")
     try:
         subprocess.run(
-            [
-                DOCKER_COMPOSE_COMMAND,
+            DOCKER_COMPOSE_COMMAND
+            + [
                 "run",
                 "--rm",
                 "django",
