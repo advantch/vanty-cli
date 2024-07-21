@@ -156,3 +156,5 @@ cython_debug/
 /.aider.tags.cache.v1/
 /.ruff_cache/
 /vanty/fly/
+.aider*
+.vanty.toml

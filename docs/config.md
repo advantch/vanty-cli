@@ -1,73 +1,96 @@
-# Configuration
+## Configuration
 
+Vanty CLI uses a configuration file to manage various settings and options. Understanding and properly configuring these options is crucial for efficient use of the CLI.
 
-The main configuration options are the API tokens: the token id and the token secret.
-These can be configured in two ways:
+### Configuration File Location
 
-1. By running the ``vanty token set`` command.
-   This writes the tokens to ``.vanty.toml`` file in your home directory.
-2. By setting the environment variables ``VANTY_TOKEN_ID`` and ``VANTY_TOKEN_SECRET``.
-   This takes precedence over the previous method.
+The primary configuration file is located at:
 
-.vanty.toml
----------------
+```
+~/.vanty.toml
+```
 
-The ``.vanty.toml`` file is generally stored in your home directory.
-It should look like this::
+This file is automatically created when you first use the CLI or can be manually created if needed.
+
+### Configuration Options
+
+Here are the key configuration options available in the `.vanty.toml` file:
+
+1. `token_id`: Your Vanty authentication token ID
+2. `token_secret`: Your Vanty authentication token secret
+3. `server_url`: The API server URL (default: https://www.advantch.com/api/v1)
+4. `loglevel`: Logging level (default: WARNING)
+5. `package_manager`: Package manager to use (default: pnpm)
+6. `use_docker`: Whether to use Docker for development (default: True)
+
+### Setting Configuration Options
+
+There are multiple ways to set these configuration options:
+
+1. **Using the CLI**:
+   You can set the token using the `vanty auth set` command:
+   ```bash
+   vanty auth set --token-id <your-token-id> --token-secret <your-token-secret>
+   ```
+
+2. **Editing the .vanty.toml file**:
+   You can manually edit the `.vanty.toml` file. Here's an example of what it might look like:
+   ```toml
+   [default]
+   token_id = "vk-12345..."
+   token_secret = "vs-12345..."
+   server_url = "https://www.advantch.com/api/v1"
+   loglevel = "INFO"
+   package_manager = "pnpm"
+   use_docker = true
+   ```
+
+3. **Using Environment Variables**:
+   You can set configuration options using environment variables. These take precedence over the `.vanty.toml` file. The environment variables are prefixed with `VANTY_`. For example:
+   ```bash
+   export VANTY_TOKEN_ID="your-token-id"
+   export VANTY_TOKEN_SECRET="your-token-secret"
+   export VANTY_SERVER_URL="https://custom-server.com/api/v1"
+   ```
+
+### Configuration Profiles
+
+The `.vanty.toml` file supports multiple configuration profiles. The default profile is named "default", but you can create additional profiles for different environments or projects.
+
+To create a new profile, add a new section to your `.vanty.toml` file:
 
 ```toml
 [default]
 token_id = "vk-12345..."
 token_secret = "vs-12345..."
+
+[development]
+token_id = "vk-67890..."
+token_secret = "vs-67890..."
+server_url = "https://dev.advantch.com/api/v1"
 ```
 
-You can create this file manually, or you can run the ``vanty token set ...``
-command (see below).
-
-Setting tokens using the CLI
-----------------------------
-
-You can set a token by running the command::
+To use a specific profile, you can set the `VANTY_PROFILE` environment variable:
 
 ```bash
-vanty token set \
-  --token-id <token id> \
-  --token-secret <token secret>
+export VANTY_PROFILE="development"
 ```
 
-This will write the token id and secret to ``.vanty.toml``.
+### Viewing Current Configuration
 
-If the token id or secret is provided as the string ``-`` (a single dash),
-then it will be read in a secret way from stdin instead.
+To view your current configuration settings, you can use the `vanty admin show-config` command:
 
-Other configuration options
----------------------------
+```bash
+vanty admin show-config
+```
 
-Other possible configuration options are:
+This will display all the current configuration settings, helping you verify your setup.
 
-* ``loglevel`` (in the .toml file) / ``VANTY_LOGLEVEL`` (as an env var).
-  Defaults to ``WARNING``.
-  Set this to ``DEBUG`` to see a bunch of internal output.
-* ``logs_timeout`` (in the .toml file) / ``VANTY_LOGS_TIMEOUT`` (as an env var).
-  Defaults to 10.
-  Number of seconds to wait for logs to drain when closing the session,
-  before giving up.
-* ``automount`` (in the .toml file) / ``VANTY_AUTOMOUNT`` (as an env var).
-  Defaults to True.
-  By default, vanty automatically mounts modules imported in the current scope, that
-  are deemed to be "local". This can be turned off by setting this to False.
-* ``server_url`` (in the .toml file) / ``VANTY_SERVER_URL`` (as an env var).
-  Defaults to ``https://www.advantch.com/api/v1``.
-  Not typically meant to be used.
+### Configuration Best Practices
 
-Meta-configuration
-------------------
+1. **Security**: Never commit your `.vanty.toml` file to version control if it contains sensitive information like token secrets.
+2. **Environment-specific configs**: Use different profiles for different environments (development, staging, production).
+3. **Version control**: Consider using a `.vanty.toml.example` file in your version control, with sensitive information removed, as a template for other developers.
+4. **Regular updates**: Periodically review and update your configuration, especially after Vanty CLI updates.
 
-Some "meta-options" are set using environment variables only:
-
-* ``VANTY_CONFIG_PATH`` lets you override the location of the .toml file,
-  by default ``~/.vanty.toml``.
-* ``VANTY_PROFILE`` lets you use multiple sections in the .toml file
-  and switch between them. It defaults to "default".
-"""
-://til.simonwillison.net for a lot of the ideas on how to structure this.
+By properly configuring Vanty CLI, you can customize its behavior to best suit your development workflow and project requirements.

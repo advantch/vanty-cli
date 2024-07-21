@@ -39,3 +39,39 @@ def remove():
     _store_user_config({"token_id": None, "token_secret": None})
     vlog.info(f"Token removed from {user_config_path}")
     return None
+
+
+@app.command(help="Log in to obtain an authentication token for browsing projects.")
+def login(
+    username: str = typer.Option(..., prompt=True),
+    password: str = typer.Option(..., prompt=True, hide_input=True),
+):
+    response = Client.login(username, password)
+    if response.is_valid:
+        _store_user_config({"auth_token": response.token})
+        rich.print("[green]Login successful![/green]")
+        rich.print(f"Authentication token written to {user_config_path}")
+        return response.token
+    else:
+        rich.print(f"[red]Login failed: {response.message}[/red]")
+        return None
+
+
+@app.command(help="Log out and remove authentication token.")
+def logout():
+    if Client.logout():
+        _store_user_config({"auth_token": None})
+        rich.print("[green]Logged out successfully[/green]")
+    else:
+        rich.print("[red]Logout failed[/red]")
+
+
+@app.command(help="Display current authentication status.")
+def status():
+    status_data = Client.check_status()
+    if status_data["is_authenticated"]:
+        rich.print("[green]Authenticated[/green]")
+    else:
+        rich.print(
+            f"[red]Not authenticated: {status_data.get('message', 'Unknown reason')}[/red]"
+        )

@@ -5,7 +5,6 @@ import logging
 import os
 import typing
 import warnings
-
 import toml
 
 # Locate config file and read it
@@ -66,6 +65,11 @@ _SETTINGS = {
     "local_folder": _Setting(default=".", transform=os.path.abspath),
     "token_secret": _Setting(),
     "ssr_enabled": _Setting(default=False, transform=lambda s: s.lower() == "true"),
+    "package_manager": _Setting(default="pnpm"),
+    "core_service_name": _Setting(default="django"),
+    "worker_service_name": _Setting(default="worker"),
+    "cache_service_name": _Setting(default="redis"),
+    "use_docker": _Setting(default=True),  # update for non docker
 }
 
 
@@ -96,6 +100,9 @@ class Config:
 
     def __getitem__(self, key):
         return self.get(key)
+
+    def display(self):
+        return {key: self.get(key) for key in _SETTINGS.keys()}
 
     def __repr__(self):
         return repr({key: self.get(key) for key in _SETTINGS.keys()})

@@ -2,14 +2,18 @@ from __future__ import annotations
 
 import subprocess
 import sys
+import shutil
+import os
 from subprocess import run
 from typing import Optional
 
 import typer
 from honcho.manager import Manager
 from rich import print
+from rich.prompt import Prompt
 from typer import Typer
 
+from vanty.constants import env_template
 from vanty.config import config
 
 app = Typer(
@@ -18,6 +22,9 @@ app = Typer(
     " running the app, run migrations, etc.",
     no_args_is_help=True,
 )
+
+DOCKER_COMPOSE_COMMAND = "docker compose"
+DJANGO_SERVICE = "django"
 
 
 @app.command()
@@ -28,14 +35,57 @@ def docs():
 
 
 @app.command()
+def create_env():
+    """
+    Check if .env file is available if not create.
+    """
+    env_exists = os.path.exists(".env")
+    example_env_exits = os.path.exists(".env-example")
+    print("[green] Checking for .env file[/green]...")
+    if not env_exists:
+        create_env = Prompt.ask(
+            "[green]It seems you have not created a .env file yet. "
+            "Would you like to create one from the default template? (y/n) [/green]"
+        )
+
+        if create_env.lower() in ["y", "yes"]:
+            # copy .env-example to .env
+            if example_env_exits:
+                shutil.copy("env-example", ".env")
+            else:
+                # make a new .env file from template
+                # write from envtemplate string
+                with open(".env", "w") as f:
+                    f.write(env_template)
+            print("Env file created successfully!")
+        else:
+            print(
+                "You will have to create a new .env file "
+                "manually to run the containers."
+            )
+
+    else:
+        print("[green] .env file already exists. Exiting![/green]")
+
+
+@app.command()
 def init():
     """Builds the docker stack"""
+    package_manager = config.get("package_manager", "pnpm")
     try:
-        run(["docker-compose", "build"])
-        run(["pnpm", "install"])
+        run([DOCKER_COMPOSE_COMMAND, "build"])
+        run([package_manager, "install"])
         print("[green] Project initialized successfully [/green]")
+        # check if env file available
+        create_env()
         print("[green] Run `vanty dev migrate` to run database migrations [/green]")
-        print("[green] Run `vanty dev start` to run the project [/green]")
+        print("[green] Run `vanty dev start` to run the project. [/green]")
+
+        print(
+            "[green] Run `vanty dev create-superuser`"
+            " to create a new superuser [/green]"
+        )
+
     except subprocess.CalledProcessError as e:
         print(e.output)
         raise e
@@ -45,7 +95,7 @@ def init():
 def build_container(container: str):
     """Rebuilds a docker container"""
     try:
-        run(["docker-compose", "build", container])
+        run([DOCKER_COMPOSE_COMMAND, "build", container])
     except subprocess.CalledProcessError as e:
         print(e.output)
         raise e
@@ -64,9 +114,10 @@ def start():
     print("[green] Starting the app...")
     manager = Manager()
     try:
-        manager.add_process("docker stack", "docker-compose up")
+        manager.add_process("docker services", "docker compose up")
         # v14.0 issue, with running vite in docker
-        manager.add_process("vite dev", "pnpm run dev")
+        package_manager = config.get("package_manager", "pnpm")
+        manager.add_process("vite dev", f"{package_manager} run dev")
         if config.get("ssr_enabled", False):
             manager.add_process("vite ssr", "node ./assets/frontend/server.js")
         manager.loop()
@@ -78,14 +129,13 @@ def start():
 
 
 @app.command()
-def migrate(options: Optional[str]):
+def migrate(options: Optional[str] = None):
     """
     Runs migrations in docker
     Assumes you are running the project in docker containers.
-    Accepts options, e.g. --fake-initial.
     """
     commands = [
-        "docker-compose",
+        DOCKER_COMPOSE_COMMAND,
         "run",
         "--rm",
         "django",
@@ -105,13 +155,13 @@ def migrate(options: Optional[str]):
 
 
 @app.command()
-def make_migrations(options: Optional[str]):
+def makemigrations(options: Optional[str] = None):
     """
     Create migrations.
     Assumes you are running the project in docker containers.
     """
     commands = [
-        "docker-compose",
+        DOCKER_COMPOSE_COMMAND,
         "run",
         "--rm",
         "django",
@@ -141,7 +191,7 @@ def create_superuser():
     try:
         run(
             [
-                "docker-compose",
+                DOCKER_COMPOSE_COMMAND,
                 "run",
                 "--rm",
                 "django",
@@ -183,28 +233,90 @@ def stripe_cli(
 
 
 @app.command()
-def run_tests(app: str = None, file: str = None):
+def tests(app: str = None, file: str = None):
     """
-    Runs tests for a specific Django app and file.
+    Runs tests in the tests directory.
+
+    file: str = None > filename without/with the extension
+    app: str = None > app name
+
+    - If no app is specified, all tests will be run.
+    - If no file is specified, all tests in the app will be run.
+    - If both app and file are specified, only the specified file will be run.
+
     """
+    fstring = None
     if file and file.endswith(".py"):
         file = file[:-3]
+    if app and file:
+        fstring = f"/tests/{app}/{file}.py" if app and file else ""
+    elif app:
+        fstring = f"/tests/{app}"
 
-    fstring = f"apps/{app}/tests/{file}.py" if app and file else ""
-    print(f"[green] Running tests for {fstring}")
+    if fstring:
+        print(f"[green] Running tests for {fstring}")
+    else:
+        print("[green] Running all tests")
 
+    # errors will not be raised as they are handled by pytest
+    try:
+        commands = [
+            DOCKER_COMPOSE_COMMAND,
+            "run",
+            "--rm",
+            "django",
+            "pytest",
+        ]
+        if fstring:
+            commands.append(fstring)
+        subprocess.run(commands, check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"[red] Tests failed with error: {e}")
+        # do not raise error as it is handled by pytest
+    except Exception as e:
+        print(f"[red] Tests failed. Error: {e}")
+
+
+@app.command()
+def copy_statics():
+    """Copies static files to the static directory"""
+    print("[green] Copying static files")
     try:
         subprocess.run(
             [
-                "docker-compose",
+                DOCKER_COMPOSE_COMMAND,
                 "run",
                 "--rm",
                 "django",
-                "pytest",
-                fstring,
+                "python",
+                "manage.py",
+                "collectstatic",
+                "--noinput",
             ],
             check=True,
         )
     except subprocess.CalledProcessError as e:
-        print(f"[red] Running tests failed for {fstring} with error: {e}")
+        print(f"[red] Copying static files failed with error: {e}")
+        raise e
+
+
+@app.command()
+def run_admin(command: str):
+    """Run django admin command"""
+    print(f"[green] Running your django admin command: {command}")
+    try:
+        subprocess.run(
+            [
+                DOCKER_COMPOSE_COMMAND,
+                "run",
+                "--rm",
+                "django",
+                "python",
+                "manage.py",
+                command,
+            ],
+            check=True,
+        )
+    except subprocess.CalledProcessError as e:
+        print(f"[red] Running django admin command failed with error: {e}")
         raise e

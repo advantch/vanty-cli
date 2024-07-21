@@ -1,12 +1,20 @@
-# <img style="margin-right: 2px; margin-top: 10px" alt="logo" height="12" width="12" src="https://cdn.advantch.com/static/images/logo.png"> Vanty CLI
+# <img style="margin-right: 2px; margin-top: 10px" alt="logo" height="16" width="16" src="https://cdn.advantch.com/static/images/logo.png"> Vanty CLI - By Advantch
 
 CLI for managing projects from advantch.com including:
 
-- TheStarter Kit
+- The Starter Kit
 
-   The Starter Kit is the fastest way to launch new SaaS & AI products.
+  - The Starter Kit is the fastest way to launch new SaaS & AI products.
 
-   Visit https://www.advantch.com/ for documentation and more information
+  - Visit https://www.advantch.com/ for documentation and more information
+
+- Advantch Cloud (beta)
+
+  - Deploy caching databases and storage for your apps
+
+- Vanty.ai (beta)
+
+  -  Vanty.ai is Agent platform for businesses and professionals. Quickly spin up entire documentation site, manage content, research, customer support with agents.
 
 ## Installation
 
@@ -39,9 +47,27 @@ poetry install vanty
 
 4. Run the project:
 
-   ```bash
-    vanty dev start
-    ```
+```bash
+vanty dev start
+```
+
+### Template GEN
+
+Zip the template file
+
+```bash
+cd ./scaffold/template/ && zip -rX app_template.zip app_template -x ".*" -x "__MACOSX"
+```
+
+Copy to bucket
+```
+rclone copy app_template.zip r2:advantch-prod/template/  --progress
+```
+
+## Docs
+
+- [Advantch Docs](https://www.advantch.com/docs/)
+- [Local CLI Docs](./docs/overview.md)
 
 ## Issues & Support:
 
@@ -64,4 +90,4 @@ Advantch users can submit PRs for extensions etc that maybe helpful to the core 
 
 Otherwise, please fork and use this as a base for your own projects.
 
-2023 &centerdot; Advantch.
+2024 &centerdot; Advantch.

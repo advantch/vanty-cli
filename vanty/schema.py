@@ -40,3 +40,9 @@ class DownloadProjectHttpResponse(BaseModel):
             profile_id="",
             profile_status=ProfileStatus.NOT_FETCHED,
         )
+
+
+class AuthResponse(BaseModel):
+    is_valid: bool
+    token: Optional[str] = None
+    message: Optional[str] = None
