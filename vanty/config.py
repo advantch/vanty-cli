@@ -32,8 +32,7 @@ def _read_user_config():
                 extended = toml.load(f)
             except toml.TomlDecodeError:
                 pass
-    print(base, extended, "user_config")
-    return {**base, **extended}
+    return {**extended, **base}
 
 
 _user_config = _read_user_config()
