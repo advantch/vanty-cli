@@ -20,7 +20,13 @@ class LicenseVerifiedHttpResponse(BaseModel):
 
     @classmethod
     def error(cls):
-        return cls(license_token="", license_id="", token_id="", token_secret="", is_valid=False)
+        return cls(
+            license_token="",
+            license_id="",
+            token_id="",
+            token_secret="",
+            is_valid=False,
+        )
 
 
 class DownloadProjectHttpResponse(BaseModel):

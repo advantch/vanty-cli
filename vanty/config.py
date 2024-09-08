@@ -48,8 +48,9 @@ def _config_active_profile():
             return key
     else:
         return "default"
-    
-def _store_user_config(new_settings, profile='default'):
+
+
+def _store_user_config(new_settings, profile="default"):
     """Internal method, used by the CLI to set tokens."""
     if profile is None:
         profile = _profile
@@ -105,7 +106,7 @@ class Config:
     def __init__(self):
         pass
 
-    def get(self, key, profile='default'):
+    def get(self, key, profile="default"):
         """Looks up a configuration value.
 
         Will check (in decreasing order of priority):
@@ -150,8 +151,6 @@ ch.setFormatter(
 logger.addHandler(ch)
 
 # Utils to write config
-
-
 
 
 # Make sure all deprecation warnings are shown

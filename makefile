@@ -8,7 +8,7 @@ copy_deps: ## Copy poetry dependencies to requirements.txt
 
 
 lint: ## lint
-	ruff check .
+	ruff check . --fix --unsafe-fixes
 	ruff format .
 
 
