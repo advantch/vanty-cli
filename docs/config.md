@@ -42,6 +42,7 @@ There are multiple ways to set these configuration options:
    server_url = "https://www.advantch.com/api/v1"
    loglevel = "INFO"
    package_manager = "pnpm"
+   frontend_root = "."
    use_docker = true
    ```
 

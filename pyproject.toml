@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "vanty"
-version = "0.0.38"
+version = "0.0.40"
 description = "CLI for installing and managing projects & applications from advantch.com and vanty.ai"
 authors = ["Themba <themba@advantch.com>"]
 license = "Unspecified"
@@ -24,7 +24,7 @@ vanty = "vanty.__main__:main"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.3.1"
-ruff = "^0.0.270"
+ruff = "^0.6.4"
 pytest-mock = ">=3.10.0,<3.14.0"
 respx = ">=0.20.1,<0.21.1"
 requests = ">=2.31.0,<2.32.0"

@@ -15,11 +15,23 @@ user_config_path: str = os.environ.get("VANTY_CONFIG_PATH") or os.path.expanduse
 
 
 def _read_user_config():
+    # first check the current directory
+    base = {}
+    extended = {}
+    if os.path.exists("vanty.toml"):
+        with open("vanty.toml") as f:
+            try:
+                base = toml.load(f)
+            except toml.TomlDecodeError:
+                pass
+    # then check the user config path
     if os.path.exists(user_config_path):
         with open(user_config_path) as f:
-            return toml.load(f)
-    else:
-        return {}
+            try:
+                extended = toml.load(f)
+            except toml.TomlDecodeError:
+                pass
+    return {**base, **extended}
 
 
 _user_config = _read_user_config()
@@ -66,6 +78,7 @@ _SETTINGS = {
     "token_secret": _Setting(),
     "ssr_enabled": _Setting(default=False, transform=lambda s: s.lower() == "true"),
     "package_manager": _Setting(default="pnpm"),
+    "frontend_root": _Setting(default="."),
     "core_service_name": _Setting(default="django"),
     "worker_service_name": _Setting(default="worker"),
     "cache_service_name": _Setting(default="redis"),

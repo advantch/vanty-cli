@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+from pathlib import Path
 import subprocess
 import sys
 import shutil
 import os
 from subprocess import run
 from typing import Optional
+from contextlib import contextmanager
 
 import typer
 from honcho.manager import Manager
@@ -24,6 +26,17 @@ app = Typer(
 )
 
 DOCKER_COMPOSE_COMMAND = ["docker", "compose"]
+
+
+@contextmanager
+def change_dir(path):
+    """Context manager for changing the current working directory"""
+    origin = Path.cwd()
+    try:
+        os.chdir(path)
+        yield
+    finally:
+        os.chdir(origin)
 
 
 @app.command()
@@ -115,10 +128,20 @@ def start():
     try:
         manager.add_process("docker services", "docker compose up")
         # v14.0 issue, with running vite in docker
+        # Get the frontend root directory from config
+        frontend_root = config.get("frontend_root", ".")
+        frontend_path = Path(frontend_root).resolve()
+
+        # v14.0 issue, with running vite in docker
         package_manager = config.get("package_manager", "pnpm")
-        manager.add_process("vite dev", f"{package_manager} run dev")
-        if config.get("ssr_enabled", False):
-            manager.add_process("vite ssr", "node ./assets/frontend/server.js")
+
+        # Change to the frontend directory for pnpm commands
+        with change_dir(frontend_path):
+            manager.add_process("vite dev", f"{package_manager} run dev")
+            if config.get("ssr_enabled", False):
+                # TODO: Fix this
+                manager.add_process("vite ssr", "node ./assets/frontend/server.js")
+
         manager.loop()
         sys.exit(manager.returncode)
     except KeyboardInterrupt:
@@ -230,7 +253,7 @@ def stripe_cli(
 
 
 @app.command()
-def tests(app: str = None, file: str = None, compose_file: str = 'docker-compose.yml'):
+def tests(app: str = None, file: str = None, compose_file: str = "docker-compose.yml"):
     """
     Runs tests in the tests directory.
 
@@ -257,12 +280,16 @@ def tests(app: str = None, file: str = None, compose_file: str = 'docker-compose
 
     # errors will not be raised as they are handled by pytest
     try:
-        commands = DOCKER_COMPOSE_COMMAND + ['-f', compose_file] + [
-            "run",
-            "--rm",
-            "django",
-            "pytest",
-        ]
+        commands = (
+            DOCKER_COMPOSE_COMMAND
+            + ["-f", compose_file]
+            + [
+                "run",
+                "--rm",
+                "django",
+                "pytest",
+            ]
+        )
         if fstring:
             commands.append(fstring)
         subprocess.run(commands, check=True)

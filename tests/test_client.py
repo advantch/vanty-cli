@@ -9,9 +9,9 @@ runner = CliRunner()
 
 
 @patch("zipfile.ZipFile.extractall")
-def download_success(mock_extract, mocked_api):
+def test_download_success(mock_extract, mocked_api):
     client = Client()
-    client.download()
+    client.download("test_project")
 
     assert mock_extract.called
     assert (
