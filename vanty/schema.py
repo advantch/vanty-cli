@@ -12,23 +12,24 @@ class ProfileStatus(str, Enum):
 
 
 class LicenseVerifiedHttpResponse(BaseModel):
-    license_token: str
-    token_id: Optional[str]
-    token_secret: Optional[str]
+    license_token: str | None = None
+    license_id: str | None = None
+    token_id: str | None = None
+    token_secret: str | None = None
     is_valid: bool
 
     @classmethod
     def error(cls):
-        return cls(license_id="", token_id="", token_secret="", is_valid=False)
+        return cls(license_token="", license_id="", token_id="", token_secret="", is_valid=False)
 
 
 class DownloadProjectHttpResponse(BaseModel):
-    url: Optional[str]
-    project_id: Optional[str]
-    version: Optional[str]
-    is_valid: Optional[bool]
-    profile_id: Optional[str]
-    profile_status: Optional[ProfileStatus]
+    url: Optional[str] | None = None
+    project_id: Optional[str] | None = None
+    version: Optional[str] | None = None
+    is_valid: Optional[bool] | None = None
+    profile_id: Optional[str] | None = None
+    profile_status: Optional[ProfileStatus] | None = None
 
     @classmethod
     def error(cls):

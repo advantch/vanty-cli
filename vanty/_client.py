@@ -4,7 +4,7 @@ import io
 import zipfile
 from typing import Optional
 
-import requests
+import httpx
 import rich
 
 from vanty.config import config, logger
@@ -19,7 +19,7 @@ class Client:
         :param url:
         :return:
         """
-        response = requests.get(url)
+        response = httpx.get(url)
         zipped_file = io.BytesIO(response.content)
         return zipped_file
 
@@ -33,7 +33,7 @@ class Client:
         server_url = config.get("server_url")
         rich.print(f"Verifying license against [blue]{server_url}[/blue]")
         try:
-            res = requests.post(
+            res = httpx.post(
                 f"{server_url}/projects/authenticate-license/",
                 json={"license_token": license_token},
             )
@@ -54,8 +54,12 @@ class Client:
         server_url = config.get("server_url")
 
         rich.print(f"Downloading project from [blue]{server_url}[/blue]")
-        response = requests.get(f"{server_url}/projects/download/", headers=headers)
-        data = DownloadProjectHttpResponse(**response.json())
+        response = httpx.get(f"{server_url}/projects/download/", headers=headers)
+        try:
+            data = DownloadProjectHttpResponse(**response.json())
+        except Exception as e:
+            rich.print(f"[red]Error downloading project: {e}[/red]")
+            return
 
         if data.is_valid is False or data.profile_status == "inactive":
             rich.print(
@@ -69,7 +73,7 @@ class Client:
             return
 
         # fetch the zip file
-        response = requests.get(data.url)
+        response = httpx.get(data.url)
         if not response.status_code == 200:
             rich.print(
                 "[red]File Download Failed, the link may have expired!\n "

@@ -48,6 +48,19 @@ def _config_active_profile():
             return key
     else:
         return "default"
+    
+def _store_user_config(new_settings, profile='default'):
+    """Internal method, used by the CLI to set tokens."""
+    if profile is None:
+        profile = _profile
+    user_config = _read_user_config()
+    user_config.setdefault(profile, {}).update(**new_settings)
+    _write_user_config(user_config)
+
+
+def _write_user_config(user_config):
+    with open(user_config_path, "w") as f:
+        toml.dump(user_config, f)
 
 
 def config_set_active_profile(env: str):
@@ -92,13 +105,14 @@ class Config:
     def __init__(self):
         pass
 
-    def get(self, key, profile=None):
+    def get(self, key, profile='default'):
         """Looks up a configuration value.
 
         Will check (in decreasing order of priority):
         1. Any environment variable of the form VANTY_FOO_BAR
         2. Settings in the user's .toml configuration file
-        3. The default value of the setting
+        3. Local .toml file in the current directory
+        4. The default value of the setting
         """
         if profile is None:
             profile = _profile
@@ -138,18 +152,6 @@ logger.addHandler(ch)
 # Utils to write config
 
 
-def _store_user_config(new_settings, profile=None):
-    """Internal method, used by the CLI to set tokens."""
-    if profile is None:
-        profile = _profile
-    user_config = _read_user_config()
-    user_config.setdefault(profile, {}).update(**new_settings)
-    _write_user_config(user_config)
-
-
-def _write_user_config(user_config):
-    with open(user_config_path, "w") as f:
-        toml.dump(user_config, f)
 
 
 # Make sure all deprecation warnings are shown

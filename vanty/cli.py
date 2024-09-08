@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import requests
+import httpx
 import typer
 import rich
 
@@ -20,7 +20,7 @@ def fetch_current_installed_version():
 
 def fetch_latest_version_from_pypi():
     url = "https://pypi.org/pypi/vanty/json"
-    response = requests.get(url)
+    response = httpx.get(url)
     if response.status_code == 200:
         data = response.json()
         return data["info"]["version"]
