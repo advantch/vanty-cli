@@ -36,7 +36,9 @@ def check_version():
             f"You are running {current_version}.[/bold red]"
         )
     else:
-        rich.print("[bold green]You are running the latest version.[/bold green]")
+        rich.print(
+            f"[bold green]You are running the latest version: {current_version}.[/bold green]"
+        )
 
 
 app = typer.Typer(

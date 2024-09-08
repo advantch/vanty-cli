@@ -18,8 +18,9 @@ def _read_user_config():
     # first check the current directory
     base = {}
     extended = {}
-    if os.path.exists("vanty.toml"):
-        with open("vanty.toml") as f:
+    cwd = os.getcwd()
+    if os.path.exists(f"{cwd}/vanty.toml"):
+        with open(f"{cwd}/vanty.toml") as f:
             try:
                 base = toml.load(f)
             except toml.TomlDecodeError:
@@ -31,6 +32,7 @@ def _read_user_config():
                 extended = toml.load(f)
             except toml.TomlDecodeError:
                 pass
+    print(base, extended, "user_config")
     return {**base, **extended}
 
 
@@ -119,6 +121,9 @@ class Config:
             profile = _profile
         s = _SETTINGS[key]
         env_var_key = "VANTY_" + key.upper()
+        _user_config = _read_user_config()
+        _user_config.get(profile, {})
+
         if env_var_key in os.environ:
             return s.transform(os.environ[env_var_key])
         elif profile in _user_config and key in _user_config[profile]:
@@ -131,6 +136,17 @@ class Config:
 
     def display(self):
         return {key: self.get(key) for key in _SETTINGS.keys()}
+
+    @property
+    def active_config(self):
+        return _profile
+
+    @property
+    def user_config(self):
+        return _read_user_config()
+
+    def set_active_config(self, profile):
+        _profile = profile
 
     def __repr__(self):
         return repr({key: self.get(key) for key in _SETTINGS.keys()})

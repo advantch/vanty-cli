@@ -87,3 +87,11 @@ def test_config_transform(config, monkeypatch):
 
     monkeypatch.setenv("VANTY_SSR_ENABLED", "false")
     assert config.get("ssr_enabled") is False
+
+
+def test_active_config(config, tmp_path, monkeypatch):
+    # check the default user profile is 'default'
+    assert config.active_config == "default", config.active_config
+    assert config.user_config == {
+        "default": {"frontend_root": "frontend/app", "ssr_enabled": "False"}
+    }, config.user_config
