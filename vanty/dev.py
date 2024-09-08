@@ -84,9 +84,14 @@ def create_env():
 def init():
     """Builds the docker stack"""
     package_manager = config.get("package_manager", "pnpm")
+    frontend_root = config.get("frontend_root", ".")
+    frontend_path = Path(frontend_root).resolve()
     try:
         run(DOCKER_COMPOSE_COMMAND + ["build"])
-        run([package_manager, "install"])
+        if frontend_path != Path.cwd():
+            run(["cd", frontend_path, package_manager, "install"])
+        else:
+            run([package_manager, "install"])
         print("[green] Project initialized successfully [/green]")
         # check if env file available
         create_env()
@@ -134,13 +139,16 @@ def start():
 
         # v14.0 issue, with running vite in docker
         package_manager = config.get("package_manager", "pnpm")
-
+        print(
+            f"[green] running frontend services with {package_manager} from {frontend_path}"
+        )
         # Change to the frontend directory for pnpm commands
-        with change_dir(frontend_path):
-            manager.add_process("vite dev", f"{package_manager} run dev")
-            if config.get("ssr_enabled", False):
-                # TODO: Fix this
-                manager.add_process("vite ssr", "node ./assets/frontend/server.js")
+        manager.add_process(
+            "vite dev", f"cd {frontend_path} && {package_manager} run dev"
+        )
+        if config.get("ssr_enabled", False):
+            # TODO: Fix this
+            manager.add_process("vite ssr", "node ./assets/frontend/server.js")
 
         manager.loop()
         sys.exit(manager.returncode)
